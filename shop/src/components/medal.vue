@@ -4,15 +4,19 @@
         <div class="md-modal-inner">
           <!-- 弹框关闭 -->
           <div class="md-top">
+            <!-- 登录框的标题 -->
+            <slot name="title"></slot>
             <button class="md-close" @click="closemedal">Close</button>
           </div>
           <!-- 弹框内数据 -->
           <div class="md-content">
             <div class="confirm-tips">
-              小姐姐
+              <!-- 登录框输入区 -->
+              <slot name="main"></slot>
             </div>
             <div class="btn-wrap">
-                <a class="btn">小哥哥</a>
+                <!-- <a class="btn">小哥哥</a> -->
+                <slot name="btngrop"></slot>
             </div>
           </div>
         </div>

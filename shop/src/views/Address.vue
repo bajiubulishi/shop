@@ -55,11 +55,11 @@
       <div class="addr-list-wrap">
         <div class="addr-list">
           <ul>
-            <li>
+            <li v-for="(address,index) in addresslist" :key="index" @click="updatadefault(address.id)">
               <dl>
-                <dt>XXX</dt>
-                <dd class="address">朝阳公园</dd>
-                <dd class="tel">10000000000</dd>
+                <dt>{{address.nickname}}</dt>
+                <dd class="address">{{address.city}}</dd>
+                <dd class="tel">{{address.tel}}</dd>
               </dl>
               <div class="addr-opration addr-del">
                 <a href="javascript:;" class="addr-del-btn">
@@ -69,7 +69,8 @@
               <div class="addr-opration addr-set-default">
                 <a href="javascript:;" class="addr-set-default-btn"><i>设置</i></a>
               </div>
-              <div class="addr-opration addr-default">默认收货地址</div>
+              <!-- 如果default=1的话则设置为默认的地址 -->
+              <div class="addr-opration addr-default" v-if="address.default=='1'">默认收货地址</div>
             </li>
             <li class="addr-new">
               <div class="add-new-inner">
@@ -94,7 +95,7 @@
       </div>
 
       <div class="next-btn-wrap">
-        <a class="btn btn--m btn--red" onclick="location.href='orderConfirm.html'">下一步</a>
+        <a class="btn btn--m btn--red" @click="gonext">下一步</a>
       </div>
     </div>
   </div>
@@ -105,7 +106,57 @@
 <script>
 import '@/assets/css/base.css'
 import '@/assets/css/checkout.css'
+import axios from 'axios'
 export default {
+  //模型初始化
+  created(){
+    this.initdata()
+  },
+  data(){
+    return {
+      addresslist:[]
+    }
+  },
+  methods:{
+    //跳转到下一步
+    gonext(){
+      this.$router.push({path:'./OrderConfirm'})
+    },
+    initdata(){
+      axios({
+        method:'post',
+        url:"http://118.31.9.103/api/address/index",
+        data:`userId=1`
+      })
+      .then(res=>{
+        //把值赋给数据模型
+        this.addresslist=res.data.data
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+    },
+    updatadefault(addressId){
+      axios({
+        method:'post',
+        url:'http://118.31.9.103/api/address/defaultAddress',
+        data:`userId=1&addressId=${addressId}`
+      })
+        .then(res=>{
+          if(res.data.meta.state==201){
+              alert('操作成功')
+              //更新数据后，重新发送请求，让页面数据边
+          this.initdata()
+            }
+          else{
+            alert(res.data.meta.msg)
+          }
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+    }
+  }
 }
 </script>
  

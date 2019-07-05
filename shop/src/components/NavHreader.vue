@@ -30,7 +30,7 @@
       <div class="navbar-menu-container">
         <!--<a href="/" class="navbar-link">我的账户</a>-->
         <span class="navbar-link"></span>
-        <a href="javascript:void(0)" class="navbar-link">登录</a>
+        <a href="javascript:void(0)" class="navbar-link" @click="form.isLogShowFlag=true">登录</a>
         <a href="javascript:void(0)" class="navbar-link">退出</a>
         <div class="navbar-cart-container">
           <span class="navbar-cart-count"></span>
@@ -44,11 +44,62 @@
     </div>
   </div>
 </header>
+<medal v-bind:isMdShow="form.isLogShowFlag" @close="closemodel">
+  <template v-slot:title>
+    <div class="md-title">登录</div>
+  </template>
+  <template v-slot:main>
+      <div class="error-wrap">
+        <span class="error error-show" v-show="form.error">用户名或者密码错误</span>
+        </div>
+      <ul>
+          <li class="regi_form_input">
+          <i class="icon IconPeople"></i>
+          <input type="text" v-model="form.username" class="regi_login_input regi_login_input_left" placeholder="用户名" data-type="loginname">
+          </li>
+          <li class="regi_form_input noMargin">
+          <i class="icon IconPwd"></i>
+          <input type="password" v-model="form.password" class="regi_login_input regi_login_input_left login-input-no input_text" placeholder="密码" @keyup.enter="login">
+          </li>
+      </ul>
+  </template>
+  <template v-slot:btngrop>
+      <a href="javascript:;" class="btn-login" @click="login">登  录</a>
+  </template>
+</medal>
  </div>
 </template>
  
 <script>
+import medal from '@/components/medal'
+import '../assets/css/header.css'
+import '../assets/css/login.css'
+
+
 export default {
+  methods:{
+    login(){
+      this.form.isLogShowFlag=false
+    },
+    closemodel(){
+      eror:''
+      usename:''
+      password:''
+      this.form.isLogShowFlag=false
+    }
+  },
+  //什么模型数据
+  data(){
+    return{
+      form:{
+        isLogShowFlag:false
+      }
+    }
+  },
+  //声明当前页公用组件
+  components:{
+    medal,
+  }
 }
 </script>
  

@@ -107,32 +107,32 @@
           </ul>
         </div>
         <ul class="cart-item-list">
-          <li>
+          <li v-for="(cart,index) in cartlist" :key="index">
             <div class="cart-tab-1">
-              <div class="cart-item-check">
-                <a href="javascipt:;" class="checkbox-btn item-check-btn check" >
+              <div class="cart-item-check" >
+                <a href="javascipt:;" class="checkbox-btn item-check-btn " :class="{'check':cart.state==1}" @click="updatacart(cart.goods_id,'state')">
                   <svg class="icon icon-ok">
                     <use xlink:href="#icon-ok"></use>
                   </svg>
                 </a>
               </div>
               <div class="cart-item-pic">
-                <img src="../../static/1.jpg">
+                <img :src="cart.img2">
               </div>
               <div class="cart-item-title">
-                <div class="item-name">XX</div>
+                <div class="item-name">{{cart.title}}</div>
               </div>
             </div>
             <div class="cart-tab-2">
-              <div class="item-price">1000</div>
+              <div class="item-price">{{cart.price}}</div>
             </div>
             <div class="cart-tab-3">
               <div class="item-quantity">
                 <div class="select-self select-self-open">
                   <div class="select-self-area">
-                    <a class="input-sub">-</a>
+                    <a class="input-sub" @click="updatacart(cart.goods_id,'-')">-</a>
                     <span class="select-ipt">1</span>
-                    <a class="input-add">+</a>
+                    <a class="input-add" @click="updatacart(cart.goods_id,'jia')">+</a>
                   </div>
                 </div>
               </div>
@@ -142,7 +142,7 @@
             </div>
             <div class="cart-tab-5">
               <div class="cart-item-opration">
-                <a href="javascript:;" class="item-edit-btn">
+                <a href="javascript:;" class="item-edit-btn" @click="updatacart(cart.goods_id,'del')">
                   <svg class="icon icon-del">
                     <use xlink:href="#icon-del"></use>
                   </svg>
@@ -167,10 +167,10 @@
         </div>
         <div class="cart-foot-r">
           <div class="item-total">
-            总价: <span class="total-price">500</span>
+            总价: <span class="total-price">{{cartallprice}}</span>
           </div>
           <div class="btn-wrap">
-            <a class="btn btn--red" onclick="location.href='address.html'">结算</a>
+            <a class="btn btn--red" @click="goadress">结算</a>
           </div>
         </div>
       </div>
@@ -191,14 +191,71 @@
  </div>
 </template>
  
-<script>
-import '@/assets/css/checkout.css'
-import '@/assets/css/login.css'
-import '@/assets/css/header.css'
-export default {
-  
-}
-</script>
+      <script>
+      import '@/assets/css/checkout.css'
+      import '@/assets/css/login.css'
+      import '@/assets/css/header.css'
+      import axios from 'axios'
+      export default {
+        //购物车列表数据动态化（请求接口 页面打开时）
+        created(){
+          this.initdata()
+        },
+        methods:{
+          goadress(){
+            this.$router.push({path:'./Address'})
+          },
+          updatacart(goodsid,state){
+            axios({
+              method:'post',
+              url:"http://118.31.9.103/api/cart/edit",
+              data:`userId=1&goodsId=${goodsid}&state=${state}`
+            })
+            .then(res=>{
+              if(res.data.meta.state==201){
+                alert('操作成功')
+                this.initdata()
+              }else{
+                alert(res.data.meta.msg)
+              }
+            })
+            .catch(error=>{
+              console.log(error)
+            })
+          },
+          initdata(){
+            axios({
+              method:'post',
+              url:"http://118.31.9.103/api/cart/index",
+              data:"userId=1"
+            })
+            .then(res=>{
+              this.cartlist=res.data.data
+              //遍历总计
+              this.cartallprice=0
+              for(let i=0; i<this.cartlist.length;i++){
+                if(this.cartlist[i].state=='1'){
+                  this.cartallprice+=this.cartlist[i].price*this.cartlist[i].num
+                }
+              }
+            })
+            .catch(error=>{
+              console.log(error)
+            })
+          }
+        },
+        data(){
+          return {
+            cartallprice:0,
+            cartlist:[]
+          }
+        },
+        created(){
+          this.initdata()
+        }
+        
+      }
+      </script>
  
 <style scoped >
  
